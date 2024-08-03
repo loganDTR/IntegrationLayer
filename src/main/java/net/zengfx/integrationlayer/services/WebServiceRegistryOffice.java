@@ -12,7 +12,7 @@ public class WebServiceRegistryOffice {
 
     private final ServiceProperties serviceProperties;
 
-    public Mono<?> getUser(String office, int id) {
+    public <T>Mono<T> getUser(String office, int id) {
         ServiceProperties.OfficeProperties officeProperties = serviceProperties.getOffices().get(office);
 
         if (officeProperties == null) {
@@ -21,10 +21,12 @@ public class WebServiceRegistryOffice {
 
         WebClient webClient = getWebClient(officeProperties);
 
-        return webClient.get().uri(officeProperties.getUriGet(), id).retrieve().bodyToMono(getClassForName(officeProperties.getResponseClass()));
+        Class<T> responseType = castToClass(getClassForName(officeProperties.getResponseClass()));
+
+        return webClient.get().uri(officeProperties.getUriGet(), id).retrieve().bodyToMono(responseType);
     }
 
-    public Mono<?> postUser(String office, Object body) {
+    public <T>Mono<T> postUser(String office, T body) {
         ServiceProperties.OfficeProperties officeProperties = serviceProperties.getOffices().get(office);
 
         if (officeProperties == null) {
@@ -33,7 +35,9 @@ public class WebServiceRegistryOffice {
 
         WebClient webClient = getWebClient(officeProperties);
 
-        return webClient.post().uri(officeProperties.getUriPost()).bodyValue(body).retrieve().bodyToMono(getClassForName(officeProperties.getResponseClass()));
+        Class<T> responseType = castToClass(getClassForName(officeProperties.getResponseClass()));
+
+        return webClient.post().uri(officeProperties.getUriPost()).bodyValue(body).retrieve().bodyToMono(responseType);
     }
 
     private WebClient getWebClient(ServiceProperties.OfficeProperties officeProperties) {
@@ -46,5 +50,10 @@ public class WebServiceRegistryOffice {
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("Class not found", e);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> Class<T> castToClass(Class<?> clazz) {
+        return (Class<T>) clazz;
     }
 }
