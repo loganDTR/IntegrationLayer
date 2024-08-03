@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: IntegrationLayer
+
+services:
+  offices:
+    A:
+      base-url: "https://66ae247cb18f3614e3b6dfcc.mockapi.io/api/v1"
+      uri: "/person/{id}"
+      response-class: "net.zengfx.integrationlayer.models.Person"
+    B:
+      base-url: "https://66ae247cb18f3614e3b6dfcc.mockapi.io/api/v1"
+      uri: "/people/{id}"
+      response-class: "net.zengfx.integrationlayer.models.People"
