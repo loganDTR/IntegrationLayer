@@ -8,32 +8,36 @@ import reactor.core.publisher.Mono;
 
 @Component
 @RequiredArgsConstructor
-public class WebServiceCaller {
+public class WebServiceRegistryOffice {
 
     private final ServiceProperties serviceProperties;
 
-    public Mono<?> callRegistryOffice(String office, int id) {
+    public Mono<?> getUser(String office, int id) {
         ServiceProperties.OfficeProperties officeProperties = serviceProperties.getOffices().get(office);
 
         if (officeProperties == null) {
             return Mono.error(new IllegalArgumentException("Office not found"));
         }
 
-        WebClient webClient = WebClient.builder().baseUrl(officeProperties.getBaseUrl()).build();
+        WebClient webClient = getWebClient(officeProperties);
 
         return webClient.get().uri(officeProperties.getUriGet(), id).retrieve().bodyToMono(getClassForName(officeProperties.getResponseClass()));
     }
 
-    public Mono<?> postRegistryOffice(String office, Object body) {
+    public Mono<?> postUser(String office, Object body) {
         ServiceProperties.OfficeProperties officeProperties = serviceProperties.getOffices().get(office);
 
         if (officeProperties == null) {
             return Mono.error(new IllegalArgumentException("Office not found"));
         }
 
-        WebClient webClient = WebClient.builder().baseUrl(officeProperties.getBaseUrl()).build();
+        WebClient webClient = getWebClient(officeProperties);
 
         return webClient.post().uri(officeProperties.getUriPost()).bodyValue(body).retrieve().bodyToMono(getClassForName(officeProperties.getResponseClass()));
+    }
+
+    private WebClient getWebClient(ServiceProperties.OfficeProperties officeProperties) {
+        return WebClient.builder().baseUrl(officeProperties.getBaseUrl()).build();
     }
 
     private Class<?> getClassForName(String className) {
