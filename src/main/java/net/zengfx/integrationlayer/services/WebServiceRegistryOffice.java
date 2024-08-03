@@ -12,35 +12,29 @@ public class WebServiceRegistryOffice {
 
     private final ServiceProperties serviceProperties;
 
-    public <T>Mono<T> getUser(String office, int id) {
+    public <T> Mono<T> getUser(String office, int id) {
+        WebClient webClient = createWebClient(office);
         ServiceProperties.OfficeProperties officeProperties = serviceProperties.getOffices().get(office);
-
-        if (officeProperties == null) {
-            return Mono.error(new IllegalArgumentException("Office not found"));
-        }
-
-        WebClient webClient = getWebClient(officeProperties);
-
         Class<T> responseType = castToClass(getClassForName(officeProperties.getResponseClass()));
 
         return webClient.get().uri(officeProperties.getUriGet(), id).retrieve().bodyToMono(responseType);
     }
 
-    public <T>Mono<T> postUser(String office, T body) {
+    public <T> Mono<T> postUser(String office, T body) {
+        WebClient webClient = createWebClient(office);
         ServiceProperties.OfficeProperties officeProperties = serviceProperties.getOffices().get(office);
-
-        if (officeProperties == null) {
-            return Mono.error(new IllegalArgumentException("Office not found"));
-        }
-
-        WebClient webClient = getWebClient(officeProperties);
-
         Class<T> responseType = castToClass(getClassForName(officeProperties.getResponseClass()));
 
         return webClient.post().uri(officeProperties.getUriPost()).bodyValue(body).retrieve().bodyToMono(responseType);
     }
 
-    private WebClient getWebClient(ServiceProperties.OfficeProperties officeProperties) {
+    private WebClient createWebClient(String office) {
+        ServiceProperties.OfficeProperties officeProperties = serviceProperties.getOffices().get(office);
+
+        if (officeProperties == null) {
+            throw new IllegalArgumentException("Office not found");
+        }
+
         return WebClient.builder().baseUrl(officeProperties.getBaseUrl()).build();
     }
 
