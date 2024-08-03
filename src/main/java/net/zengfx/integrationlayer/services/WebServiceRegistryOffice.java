@@ -2,6 +2,8 @@ package net.zengfx.integrationlayer.services;
 
 import lombok.RequiredArgsConstructor;
 import net.zengfx.integrationlayer.config.ServiceProperties;
+import net.zengfx.integrationlayer.models.User;
+import net.zengfx.integrationlayer.models.UserResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -12,20 +14,20 @@ public class WebServiceRegistryOffice {
 
     private final ServiceProperties serviceProperties;
 
-    public <T> Mono<T> getUser(String officeWebService, int id) {
+    public Mono<UserResponse> postUser(String officeWebService, User body) {
         WebClient webClient = createWebClient(officeWebService);
         ServiceProperties.OfficeProperties officeProperties = serviceProperties.getOffices().get(officeWebService);
-        Class<T> responseType = castToClass(getClassForName(officeProperties.getResponseClass()));
-
-        return webClient.get().uri(officeProperties.getUriGet(), id).retrieve().bodyToMono(responseType);
-    }
-
-    public <T> Mono<T> postUser(String officeWebService, T body) {
-        WebClient webClient = createWebClient(officeWebService);
-        ServiceProperties.OfficeProperties officeProperties = serviceProperties.getOffices().get(officeWebService);
-        Class<T> responseType = castToClass(getClassForName(officeProperties.getResponseClass()));
+        Class<UserResponse> responseType = castToClass(getClassForName(officeProperties.getResponseClass()));
 
         return webClient.post().uri(officeProperties.getUriPost()).bodyValue(body).retrieve().bodyToMono(responseType);
+    }
+
+    public Mono<UserResponse> getUser(String officeWebService, int id) {
+        WebClient webClient = createWebClient(officeWebService);
+        ServiceProperties.OfficeProperties officeProperties = serviceProperties.getOffices().get(officeWebService);
+        Class<UserResponse> responseType = castToClass(getClassForName(officeProperties.getResponseClass()));
+
+        return webClient.get().uri(officeProperties.getUriGet(), id).retrieve().bodyToMono(responseType);
     }
 
     private WebClient createWebClient(String officeWebService) {

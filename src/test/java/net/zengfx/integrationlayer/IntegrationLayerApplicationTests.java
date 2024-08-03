@@ -2,6 +2,7 @@ package net.zengfx.integrationlayer;
 
 import net.zengfx.integrationlayer.models.People;
 import net.zengfx.integrationlayer.models.Person;
+import net.zengfx.integrationlayer.models.UserResponse;
 import net.zengfx.integrationlayer.services.WebServiceRegistryOffice;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,7 @@ class IntegrationLayerApplicationTests {
 
     @Test
     void getTest() {
-        Mono<?> response = webServiceRegistryOffice.getUser("A", 1);
+        Mono<UserResponse> response = webServiceRegistryOffice.getUser("A", 1);
         Person person = response.cast(Person.class).block();
         System.out.println(person);
         assert person != null;
@@ -50,7 +51,7 @@ class IntegrationLayerApplicationTests {
 
         // Effettua la chiamata POST per creare un nuovo Person
 
-        Mono<?> postResponse = webServiceRegistryOffice.postUser("A", person);
+        Mono<UserResponse> postResponse = webServiceRegistryOffice.postUser("A", person);
 
         // Utilizza block per garantire il completamento e stampare il risultato
         Person postedPerson = postResponse.cast(Person.class).block();
@@ -58,7 +59,7 @@ class IntegrationLayerApplicationTests {
         assert postedPerson != null && postedPerson.getId() > 0;
 
         // Effettua la chiamata GET per recuperare il Person con l'ID ottenuto
-        Mono<?> getResponse = webServiceRegistryOffice.getUser("A", postedPerson.getId());
+        Mono<UserResponse> getResponse = webServiceRegistryOffice.getUser("A", postedPerson.getId());
         Person gottenPerson = getResponse.cast(Person.class).block();
         logger.info("Gotten Person: {}", gottenPerson);
 
