@@ -21,7 +21,19 @@ public class WebServiceCaller {
 
         WebClient webClient = WebClient.builder().baseUrl(officeProperties.getBaseUrl()).build();
 
-        return webClient.get().uri(officeProperties.getUri(), id).retrieve().bodyToMono(getClassForName(officeProperties.getResponseClass()));
+        return webClient.get().uri(officeProperties.getUriGet(), id).retrieve().bodyToMono(getClassForName(officeProperties.getResponseClass()));
+    }
+
+    public Mono<?> postRegistryOffice(String office, Object body) {
+        ServiceProperties.OfficeProperties officeProperties = serviceProperties.getOffices().get(office);
+
+        if (officeProperties == null) {
+            return Mono.error(new IllegalArgumentException("Office not found"));
+        }
+
+        WebClient webClient = WebClient.builder().baseUrl(officeProperties.getBaseUrl()).build();
+
+        return webClient.post().uri(officeProperties.getUriPost()).bodyValue(body).retrieve().bodyToMono(getClassForName(officeProperties.getResponseClass()));
     }
 
     private Class<?> getClassForName(String className) {

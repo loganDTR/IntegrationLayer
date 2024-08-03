@@ -19,7 +19,8 @@ public class ServiceProperties {
     @Getter
     public static class OfficeProperties {
         private String baseUrl;
-        private String uri;
+        private String uriGet;
+        private String uriPost;
         private String responseClass;
 
     }
