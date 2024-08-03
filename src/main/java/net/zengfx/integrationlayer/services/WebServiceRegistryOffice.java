@@ -2,11 +2,11 @@ package net.zengfx.integrationlayer.services;
 
 import lombok.RequiredArgsConstructor;
 import net.zengfx.integrationlayer.config.ServiceProperties;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class WebServiceRegistryOffice {
 
